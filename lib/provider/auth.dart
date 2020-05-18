@@ -1,64 +1,47 @@
-import 'dart:convert';
-
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/widgets.dart';
-import 'package:http/http.dart' as http;
-import 'package:memo/models/httpException.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+// import 'package:http/http.dart' as http;
+// import 'package:memo/models/httpException.dart';
 
-import '../models/httpException.dart';
+// import '../models/httpException.dart';
 
 class Auth with ChangeNotifier {
-  String _token;
-  DateTime _expiryDate;
-  String _userId;
+  final GoogleSignIn googleAuth = GoogleSignIn();
+  final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  bool get isAuth {
-    return token != null;
-  }
-
-  String get token {
-    if (_expiryDate != null &&
-        _expiryDate.isAfter(DateTime.now()) &&
-        _token != null) {
-      return _token;
-    }
-    return null;
-  }
-
-  Future<void> _authenticate(
-      String email, String password, String urlSegment) async {
-    final url =
-        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/$urlSegment?key= AIzaSyAZC5t7xUYPGG9QbkPeVTXG97-Mr-VoJVw ';
+  Future<String> signInWithGoogle() async {
     try {
-      final response = await http.post(
-        url,
-        body: json.encode(
-          {
-            'email': email,
-            'password': password,
-            'returnSecureToken': true,
-          },
-        ),
-      );
-      final responseData = json.decode(response.body);
-      print(responseData);
-      if (responseData['error'] != null) {
-        throw HttpException(responseData['error']['message']);
-      }
-      _token = responseData['idToken'];
-      _userId = responseData['localId'];
-      _expiryDate =DateTime.now().add(Duration(seconds: int.parse(responseData['expiresIn'])));
+      final GoogleSignInAccount googleSignInAccount = await googleAuth.signIn();
+      final GoogleSignInAuthentication googleSignInAuthentication =
+          await googleSignInAccount.authentication;
 
-      notifyListeners();
-    } catch (error) {
-      throw error;
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+          idToken: googleSignInAuthentication.idToken,
+          accessToken: googleSignInAuthentication.accessToken);
+
+      final AuthResult authResult =
+          await _auth.signInWithCredential(credential);
+      final FirebaseUser user = authResult.user;
+
+      assert(!user.isAnonymous);
+      assert(await user.getIdToken() != null);
+
+      final FirebaseUser currentUser = await _auth.currentUser();
+
+      assert(user.uid == currentUser.uid);
+
+      return 'Sign in succesful';
+    } catch (e) {
+      throw e;
     }
   }
 
-  Future<void> signup(String email, String password) async {
-    return _authenticate(email, password, 'signupNewUser');
+  Future<FirebaseUser> getDisplay() {
+    return _auth.currentUser();
   }
 
-  Future<void> login(String email, String password) async {
-    return _authenticate(email, password, 'verifyPassword');
+  void signOutGoogle() async {
+    await googleAuth.signOut();
   }
 }

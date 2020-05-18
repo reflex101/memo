@@ -1,5 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:memo/provider/auth.dart';
 import 'package:memo/provider/noteProvider.dart';
+
 import 'package:memo/widget/noteItem.dart';
 import 'package:provider/provider.dart';
 
@@ -32,21 +35,26 @@ class NoteOverview extends StatelessWidget {
                   SizedBox(
                     height: 20.0,
                   ),
-                  Text(
-                    'Category',
-                    style:
-                        TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(
-                    height: 10.0,
-                  ),
-                  Container(
-                    height: 150.0,
-                    width: double.infinity,
-                    child: ListView(
-                      scrollDirection: Axis.horizontal,
-                    ),
-                  ),
+                  // Text(
+                  //   'Category',
+                  //   style:
+                  //       TextStyle(fontSize: 20.0, fontWeight: FontWeight.bold),
+                  // ),
+                  // SizedBox(
+                  //   height: 10.0,
+                  // ),
+                  // Padding(
+                  //   padding: const EdgeInsets.only(left:20.0),
+                  //   child: Container(
+                  //     height: 200.0,
+                  //     width: double.infinity,
+                  //     child: ListView.builder(
+                  //       itemCount: 4,
+                  //       itemBuilder: (ctx, i) => Category(),
+                  //       scrollDirection: Axis.horizontal,
+                  //     ),
+                  //   ),
+                  // ),
                 ],
               ),
               SizedBox(
@@ -59,18 +67,17 @@ class NoteOverview extends StatelessWidget {
               SizedBox(
                 height: 10.0,
               ),
-              Container(
-                height: MediaQuery.of(context).size.height / 2.2,
-                width: double.infinity,
-                child: ListView.builder(
-                  itemCount: noteInfo.length,
-                  itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
-                    child: NoteItem(
-                      noteInfo[i].id,
-                      noteInfo[i].title,
-                      noteInfo[i].description
+              SingleChildScrollView(
+                child: Container(
+                  height: MediaQuery.of(context).size.height / 1.45,
+                  width: double.infinity,
+                  child: ListView.builder(
+                    itemCount: noteInfo.length,
+                    itemBuilder: (ctx, i) => ChangeNotifierProvider.value(
+                      child: NoteItem(noteInfo[i].id, noteInfo[i].title,
+                          noteInfo[i].description),
+                      value: noteInfo[i],
                     ),
-                    value: noteInfo[i],
                   ),
                 ),
               )
@@ -90,7 +97,11 @@ class Header extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final _sumOfNotes = Provider.of<Notes>(context).sumOfNotes();
-    return Row(
+    
+    return FutureBuilder(
+      future: FirebaseAuth.instance.currentUser(),
+      builder: (ctx, AsyncSnapshot<FirebaseUser> snapshot){
+      return  Row(
       children: <Widget>[
         Container(
           height: 50.0,
@@ -100,7 +111,7 @@ class Header extends StatelessWidget {
             border:
                 Border.all(color: Theme.of(context).primaryColor, width: 2.0),
             image: DecorationImage(
-              image: AssetImage('lib/assets/sea.jpg'),
+              image: NetworkImage(snapshot.hasData != null ? snapshot.data.photoUrl :  null ),
               fit: BoxFit.cover,
             ),
           ),
@@ -108,12 +119,7 @@ class Header extends StatelessWidget {
         SizedBox(
           width: 10.0,
         ),
-        Expanded(
-          child: Text(
-            'Anna June',
-            style: TextStyle(fontSize: 20.0, fontWeight: FontWeight.w500),
-          ),
-        ),
+        Expanded(child: Text(snapshot.data.displayName, style: TextStyle(fontSize:20.0, fontWeight:FontWeight.bold),)),
         Text(
           '${_sumOfNotes.toString().toUpperCase()} notes',
           style: TextStyle(
@@ -123,5 +129,6 @@ class Header extends StatelessWidget {
         ),
       ],
     );
+    });
   }
 }

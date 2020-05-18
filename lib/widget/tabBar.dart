@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
 
 import 'package:memo/screens/boxScreen.dart';
-import 'package:memo/screens/jamScreen.dart';
+
 
 import 'package:memo/screens/noteOverview.dart';
+import 'package:memo/screens/tabsSCreen.dart';
 import 'package:memo/widget/noteModal.dart';
 
 class Navigation extends StatefulWidget {
@@ -15,7 +16,7 @@ class Navigation extends StatefulWidget {
 class _NavigationState extends State<Navigation> {
   final List<Widget> _pages = [
     NoteOverview(),
-    JamScreen(),
+    TabssScreens(),
     BoxScreen(),
   ];
   int _selectedIndex = 0;
@@ -45,8 +46,8 @@ class _NavigationState extends State<Navigation> {
       body: _pages[_selectedIndex],
 
       floatingActionButton: FloatingActionButton(onPressed:(){
-       Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => NoteModal()));
-      }, child: Icon(Icons.add, size: 22.0,),),
+       Navigator.of(context).push(MaterialPageRoute(builder: (ctx) => NoteModal( storage: Storage(),)));
+      }, child: Icon(Icons.add, size: 30.0,color: Color.fromRGBO(0, 0, 71, 1),),),
       bottomNavigationBar: BottomNavigationBar(
         backgroundColor: Theme.of(context).accentColor,
         // type: BottomNavigationBarType.fixed,
@@ -56,7 +57,7 @@ class _NavigationState extends State<Navigation> {
         items: [
           BottomNavigationBarItem(icon: Icon(Icons.home), title: Text('Home')),
           BottomNavigationBarItem(
-              icon: Icon(Icons.music_note), title: Text('Jam')),
+              icon: Icon(Icons.web), title: Text('NewFeed')),
           BottomNavigationBarItem(
               icon: Icon(Icons.person_outline), title: Text('Box')),
         ],

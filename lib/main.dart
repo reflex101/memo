@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+
 import 'package:memo/provider/auth.dart';
+
 import 'package:memo/provider/noteProvider.dart';
 import 'package:memo/screens/authScreen.dart';
-import 'package:memo/screens/landing.dart';
-import 'package:memo/screens/noteOverview.dart';
+
 import 'package:memo/widget/noteModal.dart';
 import 'package:memo/widget/tabBar.dart';
 import 'package:provider/provider.dart';
@@ -24,6 +25,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider.value(
           value: Notes(),
         ),
+        
       ],
       child: Consumer<Auth>(
           builder: (ctx, auth, _) => MaterialApp(
@@ -34,13 +36,16 @@ class MyApp extends StatelessWidget {
                   visualDensity: VisualDensity.adaptivePlatformDensity,
                 ),
                 home:
-                //  auth.isAuth ?
-                Navigation() ,
+                    //  auth.isAuth ?
+                    AuthScreen(),
                 // : Landing(),
                 debugShowCheckedModeBanner: false,
                 routes: {
                   AuthScreen.routeName: (ctx) => AuthScreen(),
-                  NoteModal.routeName:(ctx) => NoteModal(),
+                  NoteModal.routeName: (ctx) => NoteModal(
+                    storage: Storage(),
+                  ),
+                  Navigation.routeName:(ctx) => Navigation()
                 },
               )),
     );

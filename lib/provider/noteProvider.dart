@@ -1,25 +1,41 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:memo/models/note.dart';
-import '';
+
 class Notes with ChangeNotifier {
   List<Note> _noteItems = [
-    Note(
-      id: 'n1',
-      title: 'Bigman joe',
-      description:
-          'You can query the Firebase Auth backend through a REST API. This can be used for various' 
-          'operations such as creating new users, signing in existing ones and editing or deleting'
-          'these users. Throughout this document, API_KEY refers to the Web API Key,',
-    ),
-    Note(
-      id: 'n1',
-      title: 'Bigman joe',
-      description:
-          'You can query the Firebase Auth backend through a REST API. This can be used for various' 
-          'operations such as creating new users, signing in existing ones and editing or deleting'
-          'these users. Throughout this document, API_KEY refers to the Web API Key,',
-    ),
+    // Note(
+    //   id: 'n1',
+    //   title: 'Bigman joe',
+    //   description:
+    //       'You can query the Firebase Auth backend through a REST API. This can be used for various' 
+    //       'operations such as creating new users, signing in existing ones and editing or deleting'
+    //       'these users. Throughout this document, API_KEY refers to the Web API Key,',
+    // ),
+    // Note(
+    //   id: 'n2',
+    //   title: 'Bigman joe',
+    //   description:
+    //       'You can query the Firebase Auth backend through a REST API. This can be used for various' 
+    //       'operations such as creating new users, signing in existing ones and editing or deleting'
+    //       'these users. Throughout this document, API_KEY refers to the Web API Key,',
+    // ),
+    // Note(
+    //   id: 'n3',
+    //   title: 'Bigman joe',
+    //   description:
+    //       'You can query the Firebase Auth backend through a REST API. This can be used for various' 
+    //       'operations such as creating new users, signing in existing ones and editing or deleting'
+    //       'these users. Throughout this document, API_KEY refers to the Web API Key,',
+    // ),
+    // Note(
+    //   id: 'n4',
+    //   title: 'Bigman joe',
+    //   description:
+    //       'You can query the Firebase Auth backend through a REST API. This can be used for various' 
+    //       'operations such as creating new users, signing in existing ones and editing or deleting'
+    //       'these users. Throughout this document, API_KEY refers to the Web API Key,',
+    // ),
     
   ];
 
@@ -43,6 +59,8 @@ class Notes with ChangeNotifier {
     if(_noteItems.isNotEmpty){
       return _noteItems.length;
     }
+
+   
     return 0;
   } 
 
@@ -58,4 +76,8 @@ class Notes with ChangeNotifier {
     
     notifyListeners();
   }
+   void removeNote(String id){
+     _noteItems.removeWhere((note) => note.id == id);
+     notifyListeners();
+   }
 }
